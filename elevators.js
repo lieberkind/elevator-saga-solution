@@ -22,6 +22,10 @@
 
         // // Whenever the elevator is idle (has no more queued destinations) ...
         _.each(elevators, function(elevator) {
+
+            elevator.goingUpIndicator(false);
+            elevator.goingDownIndicator(false);
+
             elevator.on("idle", function() {});
             
             elevator.on('floor_button_pressed', function(floorNum) {
@@ -32,9 +36,42 @@
                 if(elevator.getPressedFloors().indexOf(floorNum) > -1) {
                     elevator.goToFloor(floorNum, true);
                 }
+
+                var pickUpWaitingPassenger = 
+                    elevator.destinationDirection() === direction &&
+                    floors[floorNum].buttonStates[direction] === "activated";
+
+                if(pickUpWaitingPassenger) {
+                    elevator.goToFloor(floorNum, true);
+                }
             });
 
             elevator.on('stopped_at_floor', function(floorNum) {
+                var direction;
+
+                if (_.last(elevator.destinationQueue) > floorNum) {
+                    direction = 'up';
+                } else if (_.last(elevator.destinationQueue) < floorNum) {
+                    direction = 'down';
+                } else {
+                    if(floors[floorNum].buttonStates.down === 'activated') {
+                        direction = 'down';
+                    } else {
+                        direction = 'up';
+                    }
+                }
+
+                switch (direction) {
+                    case 'up':
+                        elevator.goingUpIndicator(true);
+                        elevator.goingDownIndicator(false);
+                        break;
+                    case 'down':
+                        elevator.goingUpIndicator(false);
+                        elevator.goingDownIndicator(true);
+                        break;
+                }
+
                 _.remove(elevator.destinationQueue, function(n) {
                     return floorNum === n;
                 });
