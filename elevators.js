@@ -26,7 +26,9 @@
             elevator.goingUpIndicator(false);
             elevator.goingDownIndicator(false);
 
-            elevator.on("idle", function() {});
+            elevator.on("idle", function() {
+                
+            });
             
             elevator.on('floor_button_pressed', function(floorNum) {
                 elevator.goToFloor(floorNum);
@@ -48,6 +50,10 @@
 
             elevator.on('stopped_at_floor', function(floorNum) {
                 var direction;
+
+                console.log('Next stop: ' + _.last(elevator.destinationQueue));
+                console.log('Next destinations:');
+                console.log(elevator.destinationQueue);
 
                 if (_.last(elevator.destinationQueue) > floorNum) {
                     direction = 'up';
@@ -72,10 +78,12 @@
                         break;
                 }
 
-                _.remove(elevator.destinationQueue, function(n) {
-                    return floorNum === n;
+                elevator.destinationQueue = _.filter(elevator.destinationQueue, function(n) {
+                    return floorNum !== n;
                 });
                 elevator.checkDestinationQueue();
+                console.log('Stops after remove:');
+                console.log(elevator.destinationQueue);
             });
         });
 
