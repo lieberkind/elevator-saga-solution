@@ -35,6 +35,12 @@
             return _.indexOf(elevator.getPressedFloors(), floorNum) > -1;
         }
 
+        function continueUp(elevator, floorNum) {
+        }
+
+        function continueDown(elevator, floorNum) {
+        }
+
         function goToTopFloor(elevator) {
             elevator.goToFloor(TOP_FLOOR);
             elevator.goingUpIndicator(true)
